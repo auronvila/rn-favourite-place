@@ -2,13 +2,13 @@
 
 # dependencies
 node_modules/
-
+.idea
+.env
 # Expo
 .expo/
 dist/
 web-build/
 # Native
-.env
 *.orig.*
 *.jks
 *.p8
