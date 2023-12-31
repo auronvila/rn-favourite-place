@@ -58,6 +58,8 @@ export default function Map() {
 
   return (
     <MapView
+      showsUserLocation
+      showsMyLocationButton
       provider={PROVIDER_GOOGLE}
       onPress={selectLocationHandler}
       style={styles.map}
