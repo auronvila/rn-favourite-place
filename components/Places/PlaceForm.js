@@ -21,7 +21,6 @@ export default function PlaceForm({onCreatePlace}) {
   }, [])
 
   function savePlaceHandler() {
-    console.log(pickedLocation)
     const placeData = new Place(enteredTitle, selectedImage, pickedLocation)
     onCreatePlace(placeData)
   }

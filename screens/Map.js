@@ -1,21 +1,30 @@
-import MapView, {Marker} from 'react-native-maps';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {Alert, StyleSheet} from 'react-native';
 import {useCallback, useLayoutEffect, useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import IconButton from '../components/UI/IconButton';
 
 export default function Map() {
-  const [selectedLocation, setSelectedLocation] = useState()
+  const route = useRoute()
+  const initialLocation = route.params && {
+    lat: route.params.initialLat,
+    lng: route.params.initialLng
+  }
+  const [selectedLocation, setSelectedLocation] = useState(initialLocation)
   const navigation = useNavigation()
 
+
   const region = {
-    latitude: 37.78,
-    longitude: -122.43,
+    latitude: initialLocation ? initialLocation.lat : 42.6026,
+    longitude: initialLocation ? initialLocation.lng : 20.9030,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421
   }
 
   function selectLocationHandler(event) {
+    if (initialLocation) {
+      return
+    }
     const selectedLatitude = event.nativeEvent.coordinate.latitude
     const selectedLongitude = event.nativeEvent.coordinate.longitude
     setSelectedLocation({
@@ -25,9 +34,7 @@ export default function Map() {
   }
 
 
-
   const savePickedLocationHandler = useCallback(() => {
-    console.log(selectedLocation)
     if (!selectedLocation) {
       Alert.alert('No location Picked', 'to save the location you have to tap on the map')
       return
@@ -38,15 +45,20 @@ export default function Map() {
   }, [navigation, selectedLocation])
 
   useLayoutEffect(() => {
+    if (initialLocation) {
+      return
+    }
+
     navigation.setOptions({
       headerRight: ({tintColor}) => (
         <IconButton size={25} iconName={'save'} onPress={savePickedLocationHandler} color={tintColor}/>
       )
     })
-  }, [navigation, savePickedLocationHandler]);
+  }, [navigation, savePickedLocationHandler, initialLocation]);
 
   return (
     <MapView
+      provider={PROVIDER_GOOGLE}
       onPress={selectLocationHandler}
       style={styles.map}
       initialRegion={region}
@@ -54,8 +66,8 @@ export default function Map() {
       {selectedLocation && <Marker
         title={'picked location'}
         coordinate={{
-          latitude: selectedLocation.latitude,
-          longitude: selectedLocation.longitude
+          latitude: initialLocation ? selectedLocation.lat : selectedLocation.latitude,
+          longitude: initialLocation ? selectedLocation.lng : selectedLocation.longitude
         }}/>}
     </MapView>
   )

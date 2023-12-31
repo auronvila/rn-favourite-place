@@ -3,6 +3,7 @@ import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import {Text} from 'react-native';
 import {useEffect, useLayoutEffect, useState} from 'react';
 import IconButton from '../components/UI/IconButton';
+import {fetchPlaces} from '../util/database';
 
 export default function AllPlaces() {
   const navigation = useNavigation()
@@ -11,10 +12,16 @@ export default function AllPlaces() {
   const [loadedPlaces, setLoadedPlaces] = useState([])
 
   useEffect(() => {
-    if (isFocused && route.params) {
-      setLoadedPlaces(currentPlaces => [...currentPlaces, route.params.place])
+    async function loadPlaces() {
+      const places = await fetchPlaces()
+      setLoadedPlaces(places)
     }
-  }, [isFocused, route]);
+
+    if (isFocused) {
+      // setLoadedPlaces(currentPlaces => [...currentPlaces, route.params.place])
+      loadPlaces()
+    }
+  }, [isFocused]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
